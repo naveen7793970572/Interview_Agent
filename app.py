@@ -1,17 +1,17 @@
 import os
+import glob
 import streamlit as st
 from dotenv import load_dotenv
-from langchain_community.document_loaders import DirectoryLoader, TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-# Load environment variables
+# -----------------------------
+# Load API Key
 # Streamlit Cloud: reads from st.secrets
 # Local: reads from .env file
+# -----------------------------
+
 load_dotenv()
 
 try:
@@ -22,47 +22,28 @@ except Exception:
 os.environ["GROQ_API_KEY"] = groq_api_key or ""
 
 
-
 # -----------------------------
-# 1. Load Documents
-# -----------------------------
-
-loader = DirectoryLoader(
-    "data",
-    glob="*.txt",
-    loader_cls=TextLoader
-)
-documents = loader.load()
-print(f"Loaded {len(documents)} documents.")
-
-
-# -----------------------------
-# 2. Split Documents
+# Load All Data Files Directly
+# (Total size is tiny ~4KB — no vector DB needed)
 # -----------------------------
 
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=50
-)
-chunks = text_splitter.split_documents(documents)
-print(f"Split into {len(chunks)} chunks.")
+def load_knowledge_base(data_dir: str = "data") -> str:
+    """Read all .txt files from the data folder into one string."""
+    knowledge = []
+    for filepath in glob.glob(os.path.join(data_dir, "*.txt")):
+        topic = os.path.splitext(os.path.basename(filepath))[0].upper()
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        knowledge.append(f"=== {topic} ===\n{content}")
+    return "\n\n".join(knowledge)
+
+
+KNOWLEDGE_BASE = load_knowledge_base()
+print("Knowledge base loaded.")
 
 
 # -----------------------------
-# 3. Embeddings + Vector Store
-# -----------------------------
-
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
-
-vectorstore = FAISS.from_documents(chunks, embeddings)
-retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-print("Vector store ready.")
-
-
-# -----------------------------
-# 4. LLM
+# LLM (Groq)
 # -----------------------------
 
 llm = ChatGroq(
@@ -73,41 +54,33 @@ print("LLM connected.")
 
 
 # -----------------------------
-# 5. LangGraph Agent
+# LangGraph Agent
 # -----------------------------
 
 class AgentState(TypedDict):
     query: str
-    context: str
     response: str
 
 
-def retrieve_context(state: AgentState):
-    """Retrieve relevant context from the vector store."""
-    results = retriever.invoke(state["query"])
-    context = "\n\n".join(doc.page_content for doc in results)
-    return {"context": context}
-
-
-def generate_answer(state: AgentState):
-    """Generate a precise answer using the LLM with retrieved context."""
+def generate_answer(state: AgentState) -> dict:
+    """Generate a precise answer using the LLM with the full knowledge base."""
     prompt = f"""You are an expert technical interview assistant with deep knowledge across ALL areas of computer science, software engineering, and technology.
 
 A user has asked the following question:
 "{state["query"]}"
 
-Additional reference material (if relevant):
+Reference material from our knowledge base (use if relevant):
 ---
-{state["context"]}
+{KNOWLEDGE_BASE}
 ---
 
 Instructions:
 - Answer the user's question directly and precisely — no topic is off-limits.
-- If they ask for interview questions on ANY topic, provide a comprehensive, well-structured list with brief answers or explanations.
+- If they ask for interview questions on ANY topic, provide a comprehensive, well-structured numbered list with brief answers or explanations.
 - If they ask to explain a concept, explain it clearly with examples.
 - If they ask about coding problems, provide solutions with explanations.
 - If they ask about system design, architecture, DevOps, cloud, ML, or anything else — answer fully.
-- Use the reference material above only if it is relevant; otherwise rely on your own knowledge.
+- Use the reference material above only if it is relevant; otherwise rely on your own expert knowledge.
 - Format your answer using markdown (bullet points, numbered lists, code blocks, bold headers) for readability.
 - Be thorough, accurate, and helpful.
 """
@@ -115,13 +88,10 @@ Instructions:
     return {"response": response.content}
 
 
-# Build the graph
+# Build the graph (single-node: just generate the answer)
 workflow = StateGraph(AgentState)
-workflow.add_node("retrieve", retrieve_context)
 workflow.add_node("answer", generate_answer)
-
-workflow.add_edge(START, "retrieve")
-workflow.add_edge("retrieve", "answer")
+workflow.add_edge(START, "answer")
 workflow.add_edge("answer", END)
 
 agent = workflow.compile()
