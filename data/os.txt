@@ -1,0 +1,24 @@
+OPERATING SYSTEM INTERVIEW QUESTIONS
+
+Operating System:
+An operating system is system software that manages computer hardware and provides services to applications.
+
+Process:
+A process is a program in execution.
+
+Thread:
+A thread is the smallest unit of CPU execution within a process.
+
+Deadlock:
+Deadlock is a situation where processes are waiting for resources held by each other and none of them can proceed.
+
+Paging:
+Paging is a memory-management technique that divides physical memory into fixed-size blocks called frames and logical memory into pages.
+
+Virtual Memory:
+Virtual memory allows a system to use secondary storage as an extension of RAM.
+
+CPU Scheduling:
+CPU scheduling determines which process should be executed by the CPU.
+
+Common scheduling algorithms include FCFS, SJF, Round Robin and Priority Scheduling.

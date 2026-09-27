@@ -1,0 +1,28 @@
+DBMS INTERVIEW QUESTIONS
+
+Database:
+A database is an organized collection of data.
+
+DBMS:
+A Database Management System is software used to create, store, retrieve and manage data.
+
+Primary Key:
+A primary key uniquely identifies each record in a table.
+It cannot contain NULL values.
+
+Foreign Key:
+A foreign key is used to establish a relationship between two tables.
+
+SQL:
+SQL stands for Structured Query Language. It is used to interact with relational databases.
+
+Normalization:
+Normalization is the process of organizing data to reduce redundancy and improve data integrity.
+
+ACID:
+ACID stands for Atomicity, Consistency, Isolation and Durability.
+These properties ensure reliable database transactions.
+
+JOIN:
+A JOIN combines rows from two or more tables based on a related column.
+Common joins include INNER JOIN, LEFT JOIN, RIGHT JOIN and FULL JOIN.

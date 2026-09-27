@@ -1,0 +1,27 @@
+DSA INTERVIEW QUESTIONS
+
+Array:
+An array is a linear data structure that stores elements of the same type in contiguous memory locations.
+
+Linked List:
+A linked list is a linear data structure where each node contains data and a reference to the next node.
+
+Stack:
+A stack follows the LIFO principle, meaning Last In First Out.
+Common operations are push, pop and peek.
+
+Queue:
+A queue follows the FIFO principle, meaning First In First Out.
+Common operations are enqueue and dequeue.
+
+Binary Search:
+Binary search works on sorted data. It repeatedly divides the search space into two halves.
+Time complexity is O(log n).
+
+Linear Search:
+Linear search checks elements one by one.
+Time complexity is O(n).
+
+Bubble Sort:
+Bubble sort repeatedly compares adjacent elements and swaps them when they are in the wrong order.
+Average and worst-case time complexity is O(n²).

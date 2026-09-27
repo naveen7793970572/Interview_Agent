@@ -1,0 +1,33 @@
+Java Interview Preparation
+
+Java is a high-level, object-oriented, class-based programming language.
+
+OOP Concepts:
+The four major principles of object-oriented programming are encapsulation, inheritance, polymorphism, and abstraction.
+
+Encapsulation:
+Encapsulation is the process of wrapping data and methods together inside a class. It helps control access to data using access modifiers.
+
+Inheritance:
+Inheritance allows one class to acquire properties and methods of another class. It promotes code reusability.
+
+Polymorphism:
+Polymorphism means one interface can have multiple implementations. In Java, compile-time polymorphism is achieved through method overloading and runtime polymorphism is achieved through method overriding.
+
+Abstraction:
+Abstraction hides implementation details and exposes only the necessary functionality. In Java, abstraction can be achieved using abstract classes and interfaces.
+
+JVM:
+JVM stands for Java Virtual Machine. It executes Java bytecode and provides platform independence.
+
+JDK:
+JDK stands for Java Development Kit. It contains tools required to develop and run Java applications.
+
+JRE:
+JRE stands for Java Runtime Environment. It provides the libraries and JVM required to run Java applications.
+
+Exception Handling:
+Exception handling is used to handle runtime problems so that normal program execution can continue. Java provides try, catch, finally, throw and throws.
+
+Multithreading:
+Multithreading allows multiple threads to execute concurrently within a program. It can improve responsiveness and resource utilization.
