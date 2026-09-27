@@ -70,35 +70,32 @@ def check_relevance(state: AgentState) -> dict:
     Classify whether the query is related to academic subjects,
     interview preparation, or technical/educational topics.
     """
-    prompt = f"""You are a strict topic classifier for an Interview Preparation Assistant.
+    prompt = f"""You are a classifier for an Interview Preparation Assistant.
 
-Your job is to decide if the user's question is related to ANY of the following allowed categories:
-- Academic subjects (Mathematics, Physics, Chemistry, Biology, History, Geography, Economics, etc.)
-- Computer Science & Engineering (Programming, DSA, DBMS, OS, Networking, etc.)
-- Interview preparation questions for ANY subject or field
-- Technical concepts, algorithms, system design, DevOps, Cloud, AI/ML
-- Aptitude, reasoning, or logical questions asked in interviews
-- Any subject taught in schools, colleges, or universities
+Is the user's question related to any of these ALLOWED topics?
+- Any academic subject: Math, Physics, Chemistry, Biology, History, Geography, Economics, etc.
+- Computer Science: Programming, DSA, DBMS, OS, Networking, System Design, DevOps, Cloud, AI/ML
+- Interview or exam preparation for any field
+- Aptitude, reasoning, or logical thinking questions
 - Career guidance related to studies or technical jobs
+- Any topic taught in school, college, or university
 
-NOT ALLOWED (return IRRELEVANT):
-- Current events, news, politics
-- Celebrity or sports gossip
-- Specific people's personal lives (politicians, actors, cricketers, etc.)
-- Entertainment, movies, songs
-- General chit-chat or personal questions
-- Questions about specific places, colleges, people, or organizations that are NOT educational in nature
+NOT ALLOWED topics:
+- Politics, politicians, prime ministers, presidents, government
+- Sports scores, players, cricket, football, IPL, celebrities
+- Movies, songs, actors, singers, entertainment
+- Personal questions, jokes, chit-chat, opinions
+- News, current events
+- Questions about specific real people's personal life
 
-User's question:
-"{state["query"]}"
+User's question: "{state["query"]}"
 
-Respond with ONLY one word:
-- RELEVANT (if it fits any allowed category)
-- IRRELEVANT (if it does not)
-"""
+Reply with ONLY the word YES or NO. Nothing else."""
+
     response = llm.invoke(prompt)
     decision = response.content.strip().upper()
-    is_relevant = "RELEVANT" in decision
+    # Use startswith to avoid substring bugs (e.g. "YES" inside "YESTERDAY")
+    is_relevant = decision.startswith("YES")
     return {"is_relevant": is_relevant}
 
 
